@@ -8,13 +8,31 @@
 # https://opensource.org/licenses/BSD-3-Clause
 # Copyright (c) 2018, Pablo S. Blum de Aguiar <scorphus@gmail.com>
 
-from lisle import find_best_link_station
-from pytest import fixture, mark
+from lisle import calc_power, find_best_link_station
+from pytest import approx, fixture, mark
 
 
 @fixture
 def link_stations():
     return [(0, 0, 10), (20, 20, 5), (10, 0, 12)]
+
+
+@mark.parametrize('link_station, device_point, power', [
+    ((0, 0, 10), (0, 0), 100),
+    ((0, 0, 10), (100, 100), 0),
+    ((0, 0, 10), (15, 10), 0),
+    ((0, 0, 10), (18, 18), 0),
+    ((20, 20, 5), (0, 0), 0),
+    ((20, 20, 5), (100, 100), 0),
+    ((20, 20, 5), (15, 10), 0),
+    ((20, 20, 5), (18, 18), 4.7),
+    ((10, 0, 12), (0, 0), 4),
+    ((10, 0, 12), (100, 100), 0),
+    ((10, 0, 12), (15, 10), 0.7),
+    ((10, 0, 12), (18, 18), 0),
+])
+def test_calc_power(link_station, device_point, power):
+    assert calc_power(link_station, device_point) == approx(power, 0.1)
 
 
 @mark.parametrize('device_point, output_line', [
