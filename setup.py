@@ -24,6 +24,7 @@ tests_require = [
     'ipdb',
     'isort',
     'pytest-cov',
+    'sphinx',
     'tox',
 ]
 

@@ -35,4 +35,8 @@ coverage-html:
 tox:
 	@tox
 
-.PHONY: list setup flake8 unit test coverage-html tox
+# generate docs with Sphinx (see ./docs)
+gendocs:
+	@$(MAKE) -C docs html
+
+.PHONY: list setup flake8 unit test coverage-html tox gendocs
