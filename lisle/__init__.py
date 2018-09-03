@@ -24,6 +24,8 @@ Note: ``x``, ``y`` and ``r`` are expected to be numeric values.
 
 '''
 
+from functools import partial
+
 
 def calc_power(link_station, device_point):
     '''Helper function that calculates the distance from a link station to the
@@ -58,4 +60,40 @@ def find_best_link_station(link_stations, device_point):
         return 'No link station within reach for point {},{}'.format(*device_point)
     return 'Best link station for point {},{} is {},{} with power {:.1f}'.format(
         *device_point, *best_station[:2], max_power
+    )
+
+
+def _find_best_link_station_with_max(link_stations, device_point):
+    '''Same as find_best_link_station but using `max`.
+
+    :arg list link_stations: The list of link stations
+    :arg tuple device_point: The point where the device is located
+    :return: A sentence with the result of the search
+    :rtype: str
+    '''
+    calc_power_from_point = partial(calc_power, device_point=device_point)
+    best_station = max(link_stations, key=calc_power_from_point)
+    power = calc_power(best_station, device_point)
+    if not power:
+        return 'No link station within reach for point {},{}'.format(*device_point)
+    return 'Best link station for point {},{} is {},{} with power {:.1f}'.format(
+        *device_point, *best_station[:2], power
+    )
+
+
+def _find_best_link_station_with_sorted(link_stations, device_point):
+    '''Same as find_best_link_station but using `sorted`.
+
+    :arg list link_stations: The list of link stations
+    :arg tuple device_point: The point where the device is located
+    :return: A sentence with the result of the search
+    :rtype: str
+    '''
+    calc_power_from_point = partial(calc_power, device_point=device_point)
+    sorted_tuples = sorted(link_stations, key=calc_power_from_point)
+    power = calc_power(sorted_tuples[-1], device_point) if sorted_tuples else 0
+    if not power:
+        return 'No link station within reach for point {},{}'.format(*device_point)
+    return 'Best link station for point {},{} is {},{} with power {:.1f}'.format(
+        *device_point, *sorted_tuples[-1][:2], power
     )
